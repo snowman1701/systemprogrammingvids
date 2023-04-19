@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <windows.h>
+
+//CreateProcess takes ten args
+//Inherit handle will give this code the same "rights" as whatever process it is adding itself to
+
+int main(void)
+{
+    HANDLE my_process;
+    HANDLE my_thread;
+
+    //struct
+    STARTUPINFO startup_info;
+    PROCESS_INFORMATION process_info;
+
+    DWORD process_id = 0;
+    DWORD thread_id = 0;
+
+    // clears out a block of memory
+    ZeroMemory(&startup_info, sizeof(startup_info));
+    ZeroMemory(&process_info, sizeof(process_info));
+
+    bool new_process = NULL;
+    LPCSTR path = "C:\\Users\\Lenovo Owner\\AppData\\Local\\Programs\\Arduino IDE\\Arduino IDE.exe";
+    printf("Path: %s", path);
+    new_process = CreateProcess(path,
+                                NULL,
+                                NULL,
+                                NULL,
+                                FALSE, //to inherit handle, either false or true
+                                0,
+                                NULL,
+                                NULL,
+                                &startup_info,
+                                &process_info);
+    if (new_process == false)
+    {
+        printf("[-] Process could not be created. Error: %lu\n", GetLastError());
+        exit(0);
+    }
+
+    else
+    {
+        printf("[+]Create Process Success\n");
+    }
+
+    //print system info
+
+    printf("Process ID > %lu\n", process_info.dwProcessId);//dwProcessID);
+    printf("Thread ID > %u\n", process_info.dwThreadId);
+    printf("GetProcessID > %u\n", GetProcessId(process_info.hProcess));
+    printf("GetThreadID > %u\n", GetThreadId(process_info.hThread));
+
+    // takes handle and time to wait
+    // infinite starts the process only when the object is signaled
+    WaitForSingleObject(process_info.hProcess, INFINITE);
+    CloseHandle(process_info.hThread);
+    CloseHandle(process_info.hProcess);
+
+
+
+
+
+
+
+
+
+
+
+
+    return 0;
+}
